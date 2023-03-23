@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+jobs:
+  Logging_test_data_for_stg:
+    runs-on: ubuntu-latest
+    environment: stg
+    steps:
+      # - name: Sleep for 30 seconds
+      #   run: sleep 180s
+      #   shell: bash
+      - name: Check out code
+        uses: actions/checkout@v3
+        # with:
+        #   ref: main
+      - name: Read package.json
+        id: package
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./test.json
+      - name: Echo package.json
+        run: echo "${{ steps.package.outputs.content }}"
+      - name: Logging
+        run: |
+          echo "${{toJSON(github.event.commits)}}"
+  Logging_test_data_for_prd:
+    runs-on: ubuntu-latest
+    needs: ['Logging_test_data_for_stg']
+    environment: prd
+    steps:
+      # - name: Sleep for 30 seconds
+      #   run: sleep 180s
+      #   shell: bash
+      - name: Check out code
+        uses: actions/checkout@v3
+        # with:
+        #   ref: main
+      - name: Read package.json
+        id: package
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./test.json
+      - name: Echo package.json
+        run: echo "${{ steps.package.outputs.content }}"
+      - name: Logging
+        run: |
+          echo "${{toJSON(github.event.commits)}}"
